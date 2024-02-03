@@ -1,28 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 /*
     # Vector Builder by Máximo Carrasco
-     A little metaprogramming console app that just makes you a file where there are declaration + definitions of a dynamic array of a user-defined datatype!
-    # Usage
-     build the file: cc vector_builder.c -o vector_builder
-     execute: ./vector_builder <datatype> <output>.h
+     A little Command Line App that just makes you a file where it has declaration + definitions of a dynamic array for a data-type!
+    # Build
+     gcc vector_build.c -o vector_build
 */
-
-size_t lenstr(char* str) {
-    size_t i = 0;
-    while(str[i++]);
-    return i;
-}
-
-void memput(char* dst, size_t dst_len, char* src, size_t src_len, size_t i) {
-    size_t j = i;
-    while(j < dst_len) {
-        dst[j] = src[j-i];
-        ++j;
-    }
-}
 
 char uppercase_char(char c) {
     if (c >= 'a' && c <= 'z')
@@ -38,19 +24,8 @@ void touppercase(char* str, size_t str_len) {
     }
 }
 
-char* copystr(char* src, size_t src_len) {
-    char* buf = (char*)calloc(src_len,sizeof(char));
-    assert(buf && "BUY MORE RAM!");
-    size_t i = 0;
-    while(i < src_len) {
-        buf[i] = src[i];
-        i++;
-    }
-    return buf;
-}
-
 void USAGE(char* program) {
-    printf("Usage: %s <datatype> <output>.h\n", program);
+    printf("Usage: %s <data_type> <output>.h\n", program);
 }
 
 int main(int argc, char** argv) {
@@ -70,18 +45,15 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    size_t type_len = lenstr(argv[1]);
+    size_t type_len = strlen(argv[1]);
 
     size_t header_safe_guards_size = 4+type_len+2;
     char* header_safe_guards = calloc(header_safe_guards_size, sizeof(char)+1);
     assert(header_safe_guards && "BUY MORE RAM!");
 
-    char* uppercase_type = copystr(argv[1], type_len);
+    char* uppercase_type = strdup(argv[1]);
     touppercase(uppercase_type, type_len);
-
-    memput(header_safe_guards, header_safe_guards_size, "VEC_", 4, 0);
-    memput(header_safe_guards, header_safe_guards_size, uppercase_type, type_len, 4);
-    memput(header_safe_guards, header_safe_guards_size, "_H", 2, header_safe_guards_size-2);
+    sprintf(header_safe_guards, "VEC_%*s_H", type_len, uppercase_type);
 
     fprintf(fp, "#include <stdlib.h>\n\n");
 
@@ -92,9 +64,7 @@ int main(int argc, char** argv) {
     char* vector_type = calloc(vector_type_size, sizeof(char));
     assert(vector_type && "BUY MORE RAM!");
 
-    memput(vector_type, vector_type_size, "Vec_", 4, 0);
-    memput(vector_type, vector_type_size, argv[1], type_len, 4);
-
+    sprintf(vector_type, "Vec_%s", argv[1]);
     vector_type[4] = uppercase_char(vector_type[4]);
 
     fprintf(fp, "typedef struct {\n");
