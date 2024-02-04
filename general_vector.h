@@ -5,10 +5,10 @@
    A simple single-header library that implements a dynamic array in C
   # Usage
    just include the header, it is a single-header library so it will just work by
-   including `vector.h` in your .c file. i.e :
+   including `general_vector.h` in your .c file. i.e :
    ```c
    #include <stdio.h>
-   #include "vector.h"
+   #include "general_vector.h"
 
    // VECTOR_TEMPLATE takes as input a data-type and generates a new struct
    // that struct would be: vector_yourDataType
